@@ -1,6 +1,6 @@
 #Simulation for Restricted DTR
-##a1 = 1 and a2 = 2 is the restricted arm.
-##Wrong propensity score model.
+##a1 = 1 and a2 = 2 is the nonviable arm.
+##Wrong propensity score model used in this simulation.
 source("TRL Functions.R")
 source('Assignx3.R')
 require(randomForest)
@@ -139,10 +139,9 @@ results_sim <- function(seed,K=5000){
   
   A1.predict <- predict.DTR(tree.1,cbind(X1.test,X2.test))
   A1.pred_naive<-predict.DTR(tree.1.naive,cbind(X1.test,X2.test))
-  #A1.test.opt <- A.opt.1(X1.test,X2.test)
   R1.predict <- R.1(X1.test,X2.test,ifelse((X3.test)>-0.5,1,2),A1.predict)
   R1.pred_naive <- R.1(X1.test,X2.test,ifelse((X3.test)>-0.5,1,2),A1.pred_naive)
-  #print(table(Label(X3.test,R1.predict)))
+  
   A2.predict <- A1.predict
   A2.pred_naive<-A1.pred_naive
   for(k in 1:K_test){
@@ -175,15 +174,17 @@ results_sim <- function(seed,K=5000){
   print(s2/K_test)#Opt1+Opt2 are correctly  predicted
   print(s4/K_test)
   
-  s1.new_m[seed]<-s1/K_test
-  s2.new_m[seed]<-s21/K_test
-  s1s2.new_m[seed]<-s2/K_test
-  s1.naive[seed]<-s3/K_test
-  s2.naive[seed]<-s22/K_test
-  s1s2.naive[seed]<-s4/K_test
+  s1.new_m[seed]<-s1/K_test #stage 1 accuracy new method
+  s2.new_m[seed]<-s21/K_test #stage 2 accuracy new method
+  s1s2.new_m[seed]<-s2/K_test #stage 1 and 2 accuracy new method
+  s1.naive[seed]<-s3/K_test #stage 1 accuracy naive method
+  s2.naive[seed]<-s22/K_test #stage 2 accuracy naive method
+  s1s2.naive[seed]<-s4/K_test #stage 1 and 2 accuracy naive method
   
   return(list(c(s1.new_m,s2.new_m,s1s2.new_m,s1.naive,s2.naive,s1s2.naive),data.frame(Y.observe,Y.pred,Y.pred_naive,Y.true,Ares,Ares_naive)))
 }
+
+# Run function iteratively.
 
 p_results3000 <- data.frame()
 p_results3000Y <- data.frame()

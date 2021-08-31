@@ -9,17 +9,12 @@ A.assign.1 <- function(X1, X2,L, a_list = c(0L,1L,2L)){
     x1 <- X1[k]
     x2 <- X2[k]
     l <- L[k]
-    #p <- c(exp(-0.3*x1+0.3*(x2+5)-0.2*(l==1)), exp(0.5*(x2+5)+0.5*(l==1)), 1)
     p <- c(exp(-0.2*x1+0.3*x2-0.2*(l==1)+0.5), exp(0.3*x2+1.5*(l==1)+0.5), 1)
     p <- p/sum(p)
     A_sample[k] <- sample(a_list, size = 1, prob = p)
   }
   return(A_sample) 
 }
-
-#p <- data.frame(a1=exp(-0.2*X1+0.3*X2-0.2*(L==1)+0.15), a2=exp(0.3*X2+1.5*(L==1)+0.15), a3=2)
-#a <- t(apply(p,1,function(x) x/sum(x)))
-#summary(a)
 
 #True Optimal Treatment at Stage 1
 A.opt.1 <- function(X1, X2, a_list = c(0L,1L,2L)){
@@ -70,22 +65,14 @@ A.assign.2 <- function(X1, X2, R1, A1, L, a_list = c(0L,1L,2L)){#what is L doing
   A_sample <- vector(mode = "numeric", length = n_sample)
   for(k in 1:n_sample){
     if(A1[k]==1L) p <- c(exp(0.05*(R1[k])-0.05*X1[k]-0.2*(L[k]==1)-1),exp(0.08*(R1[k])-0.2*X1[k]-0.1*(L[k]==1)-1.6),1)
-    else #p <- c(exp(-0.2*(R1[k]-20)-0.05*X1[k]),exp(-0.08*(R1[k]-20)+0.6*X1[k]),2)
+    else p <- c(exp(-0.2*(R1[k]-20)-0.05*X1[k]),exp(-0.08*(R1[k]-20)+0.6*X1[k]),2)
     p <- c(exp(-0.2*(R1[k])-0.05*X1[k]+4),exp(-0.08*(R1[k])+0.6*X1[k]+3),10)
     p <- p/sum(p)
     p[is.na(p)] <- 1
-    #print(p)
     A_sample[k] <- sample(a_list, size = 1, prob = p)
   }
   return(A_sample) 
 }
-
-#p <- data.frame(a1=exp(0.05*(R1[k])-0.05*X1[k]-0.2*(L[k]==1)+1),a2=exp(0.08*(R1[k])-0.2*X1[k]-0.1*(L[k]==1)+1.6),a3=1)
-#p1 <- data.frame(a1=exp(-0.2*(R1)-0.05*X1+4),a2=exp(-0.08*(R1)+0.6*X1+3),a3=10)
-#a <- t(apply(p,1,function(x) x/sum(x)))
-#summary(a)
-#a1 <- t(apply(p1,1,function(x) x/sum(x)))
-#summary(a1)
 
 #True Optimal Treatment at Stage 2
 A.opt.2 <- function(X1, X2, R1, A1, a_list = c(0L,1L,2L)){
@@ -123,10 +110,8 @@ R.2 <- function(X1, X2, R1, A1, A2, L, a_list = c(0L,1L,2L), rand = 1){#extra R2
   R <- vector(mode = "numeric", length = n_sample)
   A_opt <- A.opt.2(X1,X2,R1,A1)
   
-  #R <- exp(1 +as.numeric(L==1)*(A1==1L) - 6*exp(abs(A2-A_opt)))+ X2 + rand*rnorm(n_sample,0,0.5)#before
   R <- exp(1 +as.numeric(L==1)*(A1==1L) - 3*exp(abs(A2-A_opt))) + rand*rnorm(n_sample,0,0.5)
-  #R <- exp(1 +as.numeric(L==1)*(A1==1L) - 3*sqrt(abs(A2-A_opt))) + rand*rnorm(n_sample,0,0.5)
-  #R <- exp(1 +as.numeric(L==1)*(A1==1L) - 1.5*sqrt(abs(A2-A_opt)))+ X1 + rand*rnorm(n_sample,0,0.5)
+  
   return(R)
 }
 
@@ -157,25 +142,6 @@ Opt <- function(X1,X2,X3) {
         A.opt[k,] <- temp_a_list[a.index.max,]
         }
   }
-  # for(k in 1:n_sample){
-  #        x1 <- X1[k];x2 <- X2[k];x3 <- X3[k]
-  #        temp_a_list <- c()
-  #        temp_a_value <- c()
-  #        if(A.opt[k,1]==1L&A.opt[k,2]==2){  
-  #          for(a2 in c(0,1L)){
-  #            temp_a_list <- c(temp_a_list,a2)
-  #            r1 <- R.1(x1,x2,x3,1,rand=0) #Looking at A1=1 and A2!=2 or A1 can also be changed
-  #            l <- ifelse((x3>-0.5),1,2)
-  #            r2 <- R.2(x1,x2,r1,1,a2,l,rand=0)
-  #            temp_a_value <- c(temp_a_value,r2)
-  #          print(r2)
-  #            }
-  #        a.index.max <- which.max(temp_a_value)
-  #        print(a.index.max)
-  #        A.opt[k,2] <- temp_a_list[a.index.max]
-  #        }
-  #  }  
-  print(table(A1.opt,A2.opt))
   return(A.opt)
 }
 

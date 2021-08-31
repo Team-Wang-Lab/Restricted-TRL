@@ -1,14 +1,10 @@
 #Simulation for Restricted DTR
-##a1 = 1 and a2 = 2 is the restricted arm.
-##True propensity score model.
+##a1 = 1 and a2 = 2 is the nonviable arm.
+##We are using the true propensity score model in this simulation.
+
 source("TRL Functions.R")
 source('Assignx3.R')
 require(randomForest)
-
-m1 <- 0
-m2 <- 0
-
-
 
 results_sim <- function(seed,K=5000){
   #seed = random seed
@@ -180,15 +176,16 @@ results_sim <- function(seed,K=5000){
   print(s2/K_test)#Opt1+Opt2 are correctly  predicted
   print(s4/K_test)
   
-  s1.new_m[seed]<-s1/K_test
-  s2.new_m[seed]<-s21/K_test
-  s1s2.new_m[seed]<-s2/K_test
-  s1.naive[seed]<-s3/K_test
-  s2.naive[seed]<-s22/K_test
-  s1s2.naive[seed]<-s4/K_test
+  s1.new_m[seed]<-s1/K_test #stage 1 accuracy new method
+  s2.new_m[seed]<-s21/K_test #stage 2 accuracy new method
+  s1s2.new_m[seed]<-s2/K_test #stage 1 and 2 accuracy new method
+  s1.naive[seed]<-s3/K_test #stage 1 accuracy naive method
+  s2.naive[seed]<-s22/K_test #stage 2 accuracy naive method
+  s1s2.naive[seed]<-s4/K_test #stage 1 and 2 accuracy naive method
   
   
-  return(list(c(s1.new_m,s2.new_m,s1s2.new_m,s1.naive,s2.naive,s1s2.naive),data.frame(Y.observe,Y.pred,Y.pred_naive,Y.true,Ares,Ares_naive)))
+  return(list(c(s1.new_m,s2.new_m,s1s2.new_m,s1.naive,s2.naive,s1s2.naive),
+              data.frame(Y.observe,Y.pred,Y.pred_naive,Y.true,Ares,Ares_naive)))
 }
 
 # Run function iteratively.
@@ -219,7 +216,8 @@ sd(p_results5000Y$Y.pred_naive-p_results5000Y$Y.observe)
 sapply(p_results5000,sd)*100
 
 colMeans(p_results5000Y)
-mean(p_results5000Y$Y.pred_naive[p_results5000Y$Ares_naive==0]-p_results5000Y$Y.observe[p_results5000Y$Ares_naive==0])
+mean(p_results5000Y$Y.pred_naive[p_results5000Y$Ares_naive==0]-
+       p_results5000Y$Y.observe[p_results5000Y$Ares_naive==0])
 
 mean(p_results3000Y$Y.pred_naive[p_results3000Y$Ares_naive!=1])
 mean(p_results5000Y$Y.pred_naive[p_results5000Y$Ares_naive!=1])
