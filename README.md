@@ -1,5 +1,6 @@
-# Restricted-TRL
-Restricted Tree-based Reinforcement Learning Simulation
+# Restricted Tree-based Reinforcement Learning
+
+R functions and simulation study for "Estimating Tree-based Dynamic Treatment Regimes Using Observational Data with Restricted Treatment Sequences" 
 
 - `TRL Functions.R` stores functions for original TRL method.
 - `Assignx3.R` stores true treatment assignment and true optimal regimes for the simulation.
